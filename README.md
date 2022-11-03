@@ -1,6 +1,6 @@
-## Fraudfinder - A comprehensive lab series on how to build a real-time fraud detection system on Google Cloud.
+## Vision Workshop - A comprehensive lab series on how to build a real-time image classification system on Google Cloud.
 
-[Fraudfinder](https://github.com/googlecloudplatform/fraudfinder) is a series of labs on how to build a real-time fraud detection system on Google Cloud. Throughout the Fraudfinder labs, you will learn how to read historical payment transactions data stored in a data warehouse, read from a live stream of new transactions, perform exploratory data analysis (EDA), do feature engineering, ingest features into a feature store, train a model using feature store, register your model in a model registry, evaluate your model, deploy your model to an endpoint, do real-time inference on your model with feature store, and monitor your model.
+[Vision Workshop](https://github.com/mblanc/vision-workshop) is a series of labs on how to build an image classification system on Google Cloud. Throughout the Vision Workshop labs, you will learn how to read image data stored in data lake, perform exploratory data analysis (EDA), train a model, register your model in a model registry, evaluate your model, deploy your model to an endpoint, do real-time inference on your model.
 
 
 ## How to use this repo
@@ -90,12 +90,12 @@ Please make sure that you have selected a Google Cloud project as shown below:
 
 - Run the following code to clone this repo:
   ```
-  git clone https://github.com/GoogleCloudPlatform/fraudfinder.git
+  git clone https://github.com/mblanc/vision-workshop.git
   ```
 
 - You can also navigate to the menu on the top left of the Jupyter Lab environment and click on **Git > Clone a repository**.
 
-- Once cloned, you should now see the **fraudfinder** folder in your main directory.
+- Once cloned, you should now see the **vision-workshop** folder in your main directory.
   ![image](./misc/images/git-clone-on-terminal.png)
 
 
