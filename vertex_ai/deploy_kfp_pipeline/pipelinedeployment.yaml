@@ -6,43 +6,24 @@
 
 steps:
 
-# This step builds the dask xgboost container image to be used for training. 
+# This step builds the dask tf container image to be used for training. 
 # The PROJECT_ID variables is automatically replaced by Cloud Build.
 - name: 'gcr.io/cloud-builders/docker'
-  id: 'Build xgboost component'
+  id: 'Build tf component'
   dir: '${_WORKSPACE_DIR}'
   args:
   - 'build'
   - '-t'
-  - 'us-central1-docker.pkg.dev/$PROJECT_ID/${_IMAGE_REPOSITORY}/dask-xgb-classificator:v1'
+  - 'europe-west4-docker.pkg.dev/$PROJECT_ID/${_IMAGE_REPOSITORY}/image-classifier:v1'
   - 'build_training/'
 
 
-# #This step pushes the dask xgboost image to the GCP Container Registry
+# #This step pushes the dask tf image to the GCP Container Registry
 - name: 'gcr.io/cloud-builders/docker'
-  id: 'Push xgboost component'
+  id: 'Push tf component'
   args:
   - 'push'
-  - 'us-central1-docker.pkg.dev/$PROJECT_ID/${_IMAGE_REPOSITORY}/dask-xgb-classificator:v1'
-
-
-# # # This step runs a unit test which calls Vertex AI training. 
-# - name: python
-#   id: 'Build Unit Test'
-#   entrypoint: pip
-#   args: ["install", "google-cloud-aiplatform", "--upgrade", "--user"]
- 
-# - name: python
-#   id: 'Run Unit Test'
-#   dir: '${_WORKSPACE_DIR}'
-#   entrypoint: python
-#   args: ["unit_test/unit_test.py"] 
-#   timeout: 5200s
-#   env:
-#   - 'PROJECT_ID=$PROJECT_ID'  
-#   - 'REGION=$_REGION'
-#   - 'BUCKET_NAME=$_BUCKET_NAME' 
-#   - 'IMAGE_REPOSITORY=$_IMAGE_REPOSITORY'
+  - 'europe-west4-docker.pkg.dev/$PROJECT_ID/${_IMAGE_REPOSITORY}/image-classifier:v1'
 
 
 # This step builds the KFP container image to compile the pipeline. 
@@ -52,7 +33,7 @@ steps:
   args:
   - 'build'
   - '-t'
-  - 'us-central1-docker.pkg.dev/$PROJECT_ID/${_IMAGE_REPOSITORY}/kfp:latest'
+  - 'europe-west4-docker.pkg.dev/$PROJECT_ID/${_IMAGE_REPOSITORY}/kfp:latest'
   - 'deploy_kfp_pipeline/'
   
 # This step push the KFP container image. 
@@ -60,10 +41,10 @@ steps:
   id: 'Push kfp Container'
   args:
   - 'push'
-  - 'us-central1-docker.pkg.dev/$PROJECT_ID/${_IMAGE_REPOSITORY}/kfp:latest'
+  - 'europe-west4-docker.pkg.dev/$PROJECT_ID/${_IMAGE_REPOSITORY}/kfp:latest'
 
 # This step compiles the latest KFP pipeline in the /pipelines folder. 
-- name: 'us-central1-docker.pkg.dev/$PROJECT_ID/${_IMAGE_REPOSITORY}/kfp:latest'
+- name: 'europe-west4-docker.pkg.dev/$PROJECT_ID/${_IMAGE_REPOSITORY}/kfp:latest'
   id: 'Compile Pipeline'
   entrypoint: 'python'
   dir: '${_WORKSPACE_DIR}'

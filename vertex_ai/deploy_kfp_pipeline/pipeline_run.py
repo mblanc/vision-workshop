@@ -10,7 +10,7 @@ import base64
 
 #DISPLAY_NAME = 'fd-kfp'.format(str(int(time.time())))
 PROJECT_ID = os.getenv("PROJECT_ID", '')
-BUCKET_NAME = f"{PROJECT_ID}-fraudfinder"
+BUCKET_NAME = f"{PROJECT_ID}-vision-workshop"
 client = storage.Client()
 bucket =  client.get_bucket(BUCKET_NAME)
 blob = bucket.get_blob('config/notebook_env.py')
