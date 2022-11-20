@@ -93,7 +93,7 @@ def pipeline(project_id:str = PROJECT_ID,
                                                        location=region,
                                                        display_name=DATASET_NAME,
                                                        import_schema_uri=vertex_ai.schema.dataset.ioformat.image.single_label_classification,
-                                                       gcs_source=f"gs://{BUCKET_NAME}/prod/flowers.csv")
+                                                       gcs_source=f"gs://{BUCKET_NAME}/flowers/flowers.csv")
     
     #custom training job component - script
     train_model_op = vertex_ai_components.CustomContainerTrainingJobRunOp(
@@ -118,9 +118,9 @@ def pipeline(project_id:str = PROJECT_ID,
         location=region,
         job_display_name="batch_predict_job",
         model=train_model_op.outputs["model"],
-        gcs_source_uris=[f"gs://{BUCKET_NAME}/test2.jsonl"],
+        gcs_source_uris=[f"gs://{BUCKET_NAME}/flowers_batch.txt"],
         gcs_destination_output_uri_prefix=f"gs://{BUCKET_NAME}",
-        instances_format="jsonl",
+        instances_format="file-list",
         predictions_format="jsonl",
         model_parameters={},
         machine_type=machine_type,

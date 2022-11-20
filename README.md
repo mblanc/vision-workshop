@@ -9,12 +9,10 @@ This repo is organized across various notebooks as:
 
 * [00_environment_setup.ipynb](00_environment_setup.ipynb)
 * [01_exploratory_data_analysis.ipynb](01_exploratory_data_analysis.ipynb)
-* [02_feature_engineering_batch.ipynb](02_feature_engineering_batch.ipynb)
-* [03_feature_engineering_streaming.ipynb](03_feature_engineering_streaming.ipynb)
-* [bqml/](bqml/)
-  * [04_model_training_and_prediction.ipynb](bqml/04_model_training_and_prediction.ipynb)
-  * [05_model_training_pipeline_formalization.ipynb](bqml/05_model_training_pipeline_formalization.ipynb)
-  * [06_model_monitoring.ipynb](bqml/06_model_monitoring.ipynb)
+* [vertex_ai/](vertex_ai/)
+  * [04_model_experimentation.ipynb](bqml/04_model_experimentation.ipynb)
+  * [05_model_training_formalization.ipynb](bqml/05_model_training_formalization.ipynb)
+  * [06_model_training_pipeline.ipynb](bqml/06_model_training_pipeline.ipynb)
 
 ## Creating a Google Cloud project
 
@@ -52,13 +50,15 @@ Please make sure that you have selected a Google Cloud project as shown below:
   gcloud services enable cloudbuild.googleapis.com
   gcloud services enable dataflow.googleapis.com
   gcloud services enable bigquery.googleapis.com
-  
-  gcloud pubsub subscriptions create "ff-tx-sub" --topic="ff-tx" --topic-project="cymbal-fraudfinder"
-  gcloud pubsub subscriptions create "ff-txlabels-sub" --topic="ff-txlabels" --topic-project="cymbal-fraudfinder"
+  gcloud services enable bigquery.googleapis.com
+  gcloud services enable artifactregistry.googleapis.com
   
   # Run the following command to grant the Compute Engine default service account access to read and write pipeline artifacts in Google Cloud Storage.
+  
   PROJECT_ID=$(gcloud config get-value project)
+  
   PROJECT_NUM=$(gcloud projects list --filter="$PROJECT_ID" --format="value(PROJECT_NUMBER)")
+  
   gcloud projects add-iam-policy-binding $PROJECT_ID \
         --member="serviceAccount:${PROJECT_NUM}-compute@developer.gserviceaccount.com"\
         --role='roles/storage.admin'
@@ -74,10 +74,6 @@ Please make sure that you have selected a Google Cloud project as shown below:
   gcloud projects add-iam-policy-binding $PROJECT_ID \
       --member="serviceAccount:${PROJECT_NUM}-compute@developer.gserviceaccount.com"\
       --role='roles/iam.serviceAccountUser'
-      
-  gcloud projects add-iam-policy-binding $PROJECT_ID \
-      --member="serviceAccount:service-${PROJECT_NUM}@gcp-sa-aiplatform-cc.iam.gserviceaccount.com"\
-      --role='roles/artifactregistry.admin'    
   ```
 
 #### Step 2: Create a User-Managed Notebook instance on Vertex AI Workbench
