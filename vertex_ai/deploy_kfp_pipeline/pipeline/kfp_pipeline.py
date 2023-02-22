@@ -13,9 +13,10 @@ import json
 # from kfp.v2 import compiler
 
 from google.cloud import aiplatform as vertex_ai
+from google.cloud import storage
 from google_cloud_pipeline_components import aiplatform as vertex_ai_components
 from google_cloud_pipeline_components.v1.batch_predict_job import ModelBatchPredictOp
-from google.cloud import storage
+from google_cloud_pipeline_components.types import artifact_types
 # from kfp.v2.google.client import AIPlatformClient as VertexAIClient
 
 
@@ -30,6 +31,7 @@ import kfp
 from kfp import dsl
 from kfp.v2 import compiler
 from kfp.v2.dsl import component
+from kfp.v2.components import importer_node
 
 # These variables would be passed from Cloud Build in CI/CD.
 TIMESTAMP = datetime.now().strftime("%Y%m%d%H%M%S")
@@ -76,6 +78,8 @@ ARGS=[ "--lr=0.003", "--epochs=5"]
 #endpoint
 ENDPOINT_NAME = 'vision_workshop_tf_prediction'
 
+ds = vertex_ai.ImageDataset.list(filter="display_name=flowers", location=REGION)[0]
+
 
 @dsl.pipeline(
     pipeline_root=PIPELINE_ROOT,
@@ -88,12 +92,14 @@ def pipeline(project_id:str = PROJECT_ID,
              machine_type:str = "n1-standard-4",
             ):
     
-    #create dataset 
-    dataset_create_op = vertex_ai_components.ImageDatasetCreateOp(project=project_id,
-                                                       location=region,
-                                                       display_name=DATASET_NAME,
-                                                       import_schema_uri=vertex_ai.schema.dataset.ioformat.image.single_label_classification,
-                                                       gcs_source=f"gs://{BUCKET_NAME}/flowers/flowers.csv")
+    #import dataset 
+    importer_op = importer_node.importer(
+        artifact_uri=f"https://{ds.location}-aiplatform.googleapis.com/v1/{ds.resource_name}",
+        artifact_class=artifact_types.VertexDataset,
+        metadata={
+            "resourceName": ds.resource_name,
+        },
+    )
     
     #custom training job component - script
     train_model_op = vertex_ai_components.CustomContainerTrainingJobRunOp(
@@ -101,7 +107,7 @@ def pipeline(project_id:str = PROJECT_ID,
         model_display_name=MODEL_NAME,
         container_uri=IMAGE_URI,
         staging_bucket=bucket_name,
-        dataset=dataset_create_op.outputs['dataset'],
+        dataset=importer_op.output,
         annotation_schema_uri=vertex_ai.schema.dataset.annotation.image.classification,
         base_output_dir=bucket_name,
         args = ARGS,
@@ -111,22 +117,22 @@ def pipeline(project_id:str = PROJECT_ID,
         accelerator_count=1,
         model_serving_container_image_uri=MODEL_SERVING_IMAGE_URI,
         project=project_id,
-        location=region).after(dataset_create_op)
+        location=region).after(importer_op)
     
-    batch_op = ModelBatchPredictOp(
-        project=project_id,
-        location=region,
-        job_display_name="batch_predict_job",
-        model=train_model_op.outputs["model"],
-        gcs_source_uris=[f"gs://{BUCKET_NAME}/flowers_batch.txt"],
-        gcs_destination_output_uri_prefix=f"gs://{BUCKET_NAME}",
-        instances_format="file-list",
-        predictions_format="jsonl",
-        model_parameters={},
-        machine_type=machine_type,
-        starting_replica_count=1,
-        max_replica_count=1,
-    )
+    # batch_op = ModelBatchPredictOp(
+    #     project=project_id,
+    #     location=region,
+    #     job_display_name="batch_predict_job",
+    #     model=train_model_op.outputs["model"],
+    #     gcs_source_uris=[f"gs://{BUCKET_NAME}/flowers_batch.txt"],
+    #     gcs_destination_output_uri_prefix=f"gs://{BUCKET_NAME}",
+    #     instances_format="file-list",
+    #     predictions_format="jsonl",
+    #     model_parameters={},
+    #     machine_type=machine_type,
+    #     starting_replica_count=1,
+    #     max_replica_count=1,
+    # )
 
     
     #create endpoint

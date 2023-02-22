@@ -6,7 +6,7 @@
 
 steps:
 
-# This step builds the dask tf container image to be used for training. 
+# This step builds the tf container image to be used for training. 
 # The PROJECT_ID variables is automatically replaced by Cloud Build.
 - name: 'gcr.io/cloud-builders/docker'
   id: 'Build tf component'
@@ -18,7 +18,7 @@ steps:
   - 'build_training/'
 
 
-# #This step pushes the dask tf image to the GCP Container Registry
+# #This step pushes the tf image to the GCP Container Registry
 - name: 'gcr.io/cloud-builders/docker'
   id: 'Push tf component'
   args:

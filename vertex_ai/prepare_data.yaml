@@ -1,0 +1,38 @@
+name: Func
+implementation:
+  container:
+    image: europe-docker.pkg.dev/vertex-ai/training/tf-cpu.2-5:latest
+    command:
+    - sh
+    - -c
+    - |2
+
+      if ! [ -x "$(command -v pip)" ]; then
+          python3 -m ensurepip || python3 -m ensurepip --user || apt-get install python3-pip
+      fi
+
+      PIP_DISABLE_PIP_VERSION_CHECK=1 python3 -m pip install --quiet     --no-warn-script-location 'https://storage.googleapis.com/temp-vision-workshop-public/urllib3-1.26.12-py2.py3-none-any.whl' 'kfp==1.8.14' && "$0" "$@"
+    - sh
+    - -ec
+    - |
+      program_path=$(mktemp -d)
+      printf "%s" "$0" > "$program_path/ephemeral_component.py"
+      python3 -m kfp.v2.components.executor_main                         --component_module_path                         "$program_path/ephemeral_component.py"                         "$@"
+    - |2+
+
+      import kfp
+      from kfp.v2 import dsl
+      from kfp.v2.dsl import *
+      from typing import *
+
+      def func():
+          import urllib3
+          http = urllib3.PoolManager()
+          r = http.request('GET', 'http://httpbin.org/robots.txt')
+          print(f"STATUS : {r.status}")
+
+    args:
+    - --executor_input
+    - {executorInput: null}
+    - --function_to_execute
+    - func

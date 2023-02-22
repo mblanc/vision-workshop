@@ -1,10 +1,9 @@
-from kfp.v2.google.client import AIPlatformClient
 import time
 import os
 import argparse
 import json
 import logging
-from kfp.v2.google.client import AIPlatformClient
+from google.cloud import aiplatform as vertex_ai
 from google.cloud import storage
 import base64
 
@@ -19,28 +18,28 @@ exec(config)
 
 PIPELINE_ROOT = f'gs://{BUCKET_NAME}/pipelines'
 print(f'''Pipeline Root: {PIPELINE_ROOT}''')
+PIPELINE_NAME = f'vision-workshop-tf-pipeline-{ID}'
 
 def run_pipeline(pipelines_file_location):
     print(f'''REGION:{REGION}''')
-    api_client = AIPlatformClient(project_id=PROJECT_ID,region=REGION,)
+#     api_client = AIPlatformClient(project_id=PROJECT_ID,region=REGION,)
     
-    response = api_client.create_run_from_job_spec(
-        pipelines_file_location, 
-        pipeline_root=PIPELINE_ROOT,
-        parameter_values={"project_id": PROJECT_ID,
-                          "region": REGION,},
-        enable_caching=False
-    )
+#     response = api_client.create_run_from_job_spec(
+#         pipelines_file_location, 
+#         pipeline_root=PIPELINE_ROOT,
+#         parameter_values={"project_id": PROJECT_ID,
+#                           "region": REGION,},
+#         enable_caching=False
+#     )
 
-    print(response)
-    # from google.cloud import aiplatform
-    # job = aiplatform.PipelineJob(display_name = 'test1',
-    #                              template_path = pipelines_file_location,
-    #                              pipeline_root = PIPELINE_ROOT,
-    #                              parameter_values = {"project_id": PROJECT_ID,"region": REGION,},
-    #                              project = PROJECT_ID,
-    #                              location = REGION)
-    # job.run(sync=False)
+#     print(response)
+    job = vertex_ai.PipelineJob(display_name = PIPELINE_NAME,
+                                 template_path = pipelines_file_location,
+                                 pipeline_root = PIPELINE_ROOT,
+                                 parameter_values = {"project_id": PROJECT_ID,"region": REGION,},
+                                 project = PROJECT_ID,
+                                 location = REGION)
+    job.run(sync=False)
 
 
 

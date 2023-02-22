@@ -46,12 +46,10 @@ Please make sure that you have selected a Google Cloud project as shown below:
   gcloud services enable cloudresourcemanager.googleapis.com
   gcloud services enable aiplatform.googleapis.com
   gcloud services enable pubsub.googleapis.com
-  gcloud services enable run.googleapis.com
   gcloud services enable cloudbuild.googleapis.com
-  gcloud services enable dataflow.googleapis.com
-  gcloud services enable bigquery.googleapis.com
-  gcloud services enable bigquery.googleapis.com
   gcloud services enable artifactregistry.googleapis.com
+  gcloud services enable cloudfunctions.googleapis.com
+  gcloud services enable cloudscheduler.googleapis.com
   
   # Run the following command to grant the Compute Engine default service account access to read and write pipeline artifacts in Google Cloud Storage.
   
@@ -73,6 +71,34 @@ Please make sure that you have selected a Google Cloud project as shown below:
       
   gcloud projects add-iam-policy-binding $PROJECT_ID \
       --member="serviceAccount:${PROJECT_NUM}-compute@developer.gserviceaccount.com"\
+      --role='roles/iam.serviceAccountUser'
+      
+  gcloud projects add-iam-policy-binding $PROJECT_ID \
+      --member="serviceAccount:${PROJECT_NUM}-compute@developer.gserviceaccount.com"\
+      --role='roles/cloudbuild.builds.editor'
+      
+  gcloud projects add-iam-policy-binding $PROJECT_ID \
+      --member="serviceAccount:${PROJECT_NUM}-compute@developer.gserviceaccount.com"\
+      --role='roles/pubsub.editor'
+      
+  gcloud projects add-iam-policy-binding $PROJECT_ID \
+      --member="serviceAccount:${PROJECT_NUM}-compute@developer.gserviceaccount.com"\
+      --role='roles/cloudfunctions.developer'
+      
+  gcloud projects add-iam-policy-binding $PROJECT_ID \
+      --member="serviceAccount:${PROJECT_NUM}-compute@developer.gserviceaccount.com"\
+      --role='roles/cloudscheduler.admin'
+      
+  gcloud projects add-iam-policy-binding $PROJECT_ID \
+      --member="serviceAccount:${PROJECT_ID}@appspot.gserviceaccount.com"\
+      --role='roles/storage.admin'
+      
+  gcloud projects add-iam-policy-binding $PROJECT_ID \
+      --member="serviceAccount:${PROJECT_ID}@appspot.gserviceaccount.com"\
+      --role='roles/aiplatform.user'
+      
+  gcloud projects add-iam-policy-binding $PROJECT_ID \
+      --member="serviceAccount:${PROJECT_ID}@appspot.gserviceaccount.com"\
       --role='roles/iam.serviceAccountUser'
   ```
 
