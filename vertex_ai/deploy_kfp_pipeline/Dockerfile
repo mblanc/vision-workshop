@@ -2,7 +2,7 @@ FROM python:3.7
 WORKDIR /root
 
 # Installs additional packages
-RUN pip install gcsfs numpy pandas google-cloud-aiplatform==1.18.2 kfp==1.8.14 google-cloud-pipeline-components==1.0.26 tensorflow==2.8.3 --upgrade
+RUN pip install appengine-python-standard gcsfs numpy pandas google-cloud-aiplatform==1.18.2 kfp==1.8.14 google-cloud-pipeline-components==1.0.26 tensorflow==2.8.3 --upgrade
 
 RUN mkdir /app
 RUN mkdir /app/pipeline
